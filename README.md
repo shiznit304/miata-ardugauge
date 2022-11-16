@@ -9,8 +9,9 @@ _NOTE:_ The gauge shares the same Serial port for communcations with Speeduino E
 
 1. **Arduino Nano** - should work with most 328P arduino boards
 2. **Monochrome OLED display** - 128x64 px, SSD1306 driver, I2C interface
-3. **Push button** - with optional pull-up resistor.
-4. **Connector** of your choice.
+3. **Push button**
+4. **Connector** of your choice
+5. **Oil temperature sensor** (optional) I had a sensor already installed in my car so I added the code to read from it
 
 ## Basic Pinout
 
