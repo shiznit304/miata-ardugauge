@@ -4,12 +4,11 @@
 
 ADC values are calculated as  ADC = ADCmax / Vcc * Vsens
                       where   Vsens = Vcc / (Rsens + Rbias) * Rsens
-See below for sensor resistance values.
 Entries in the oilADC array are calculated with Vcc = 5V and Rbias = 2700 ohms            
 
 */
 #define OIL_TABLE_SIZE 13
-#define OILTEMP_FILTER 10
+#define OILTEMP_FILTER 16
 #define ADC_NO_CONN    1000 
 #define ADC_COLD       500 
 
@@ -21,6 +20,7 @@ const uint8_t oilDegrees[OIL_TABLE_SIZE] = {150,   140,   130,   120,   110,   1
 uint8_t getOilTemp()
 {
   static uint16_t adcValue = 0;
+  static bool oilCold = true;
   uint8_t i = 1;
   uint8_t oilLast;
 
@@ -30,11 +30,14 @@ uint8_t getOilTemp()
     return adcValue / 4;
   #endif
 
+  if(oilCold && (adcValue < ADC_COLD))  
+    oilCold = false; // Oil is considered cold until it reaches a given temperature
+
   if(adcValue > ADC_NO_CONN) return 255; // Sensor not connected
-  if(adcValue >= ADC_COLD) return 0;  // Oil is cold (< 25)
+  if(oilCold) return 0; // Oil is cold
 
   if(adcValue <= oilADC[0])
-    oilLast = oilDegrees[0];           // Return highest value
+    oilLast = oilDegrees[0]; // Return highest value
   else
   {
     while(adcValue > oilADC[i]) i++;

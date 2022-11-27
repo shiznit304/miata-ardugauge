@@ -13,6 +13,9 @@
 
 #define SPEEDUINO_TEMPERATURE_OFFSET -40
 
+#define EGO_AUTHORITY   2 // Authority of EGO correction (as set in TunerStudio)
+#define EGO_TICK_PIXELS 5 // How many pixels should the EGO indicator move up/down for every %
+
 #define strlen_PM(x) strlen_P(reinterpret_cast<const char *>(x))
 #define Fstring const __FlashStringHelper *
 

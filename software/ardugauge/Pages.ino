@@ -269,6 +269,7 @@ void bottomRow_BAT_BARO()
 void bottomRow_AFR()
 {
   char valString[8];
+  int8_t i;
 
   //OLED.setCursor(2, 53);
   //OLED.setTextSize(0);
@@ -279,17 +280,17 @@ void bottomRow_AFR()
   OLED.print(valString);
 
   // EGO Correction indicators
-  if(getByte(SPEEDUINO_EGOCORR_BYTE) > 100)
-    OLED.fillTriangle(20, 46, 25, 41, 30, 46, INVERSE);
-  else if(getByte(SPEEDUINO_EGOCORR_BYTE) < 100)
-    OLED.fillTriangle(20, 50, 25, 55, 30, 50, INVERSE);
+  OLED.drawFastVLine(1, 48 - EGO_AUTHORITY * EGO_TICK_PIXELS, 2 * EGO_AUTHORITY * EGO_TICK_PIXELS + 1, INVERSE);
+  for(i = -EGO_AUTHORITY; i <= EGO_AUTHORITY; i++)
+    OLED.drawFastHLine(2, 48 + (i * EGO_TICK_PIXELS), 3, INVERSE);
+  i = (getByte(SPEEDUINO_EGOCORR_BYTE) - 100) * EGO_TICK_PIXELS;
+  OLED.fillTriangle(8, 48 - i, 12, 44 - i, 12, 52 - i, INVERSE);
 
-  // TPS AE indicator
+  // TPS AE/DE indicator
   if(getByte(SPEEDUINO_TAECORR_BYTE) > 100)
-  {
-    OLED.fillTriangle(1, 45, 8, 38, 15, 45, INVERSE);
-    OLED.drawTriangle(1, 52, 8, 45, 15, 52, INVERSE);
-  }
+    OLED.fillTriangle(20, 46, 24, 38, 28, 46, INVERSE);
+  else if(getByte(SPEEDUINO_TAECORR_BYTE) < 100)
+    OLED.fillTriangle(20, 50, 24, 58, 28, 50, INVERSE);
 }
 
 // Display Target and AFR on the bottom row
@@ -359,7 +360,7 @@ void pageTuning()
 
   // Print Current VE
   OLED.setCursor(92,49);
-  uint8_t ve = getByte(SPEEDUINO_VE_BYTE);
+  uint16_t ve = getByte(SPEEDUINO_CURRENTVE_BYTE) * 100 / getByte(SPEEDUINO_GAMMAE_BYTE);
   if(ve < 100)
     OLED.print(" ");
   formatValue(valString, ve, 0);
@@ -367,7 +368,7 @@ void pageTuning()
 
   // Print Suggested VE
   OLED.setCursor(1,49);
-  uint16_t new_ve = ve * tgt / afr;
+  uint32_t new_ve = ve * afr / tgt;
   if(new_ve < 100)
     OLED.print(" ");
   formatValue(valString, new_ve, 0);

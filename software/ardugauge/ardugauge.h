@@ -16,7 +16,7 @@
 #define SPEEDUINO_RPM_WORD				        14
 #define SPEEDUINO_TAECORR_BYTE            16  // %
 #define SPEEDUINO_GAMMAE_BYTE             17  // %
-#define SPEEDUINO_VE_BYTE                 18
+#define SPEEDUINO_CURRENTVE_BYTE          18
 #define SPEEDUINO_AFRTARGET_BYTE          19  // x 10
 #define SPEEDUINO_TPSDOT_BYTE             22  // / 10
 #define SPEEDUINO_TPS_BYTE                24  // x 2
@@ -35,7 +35,7 @@
 #define SPEEDUINO_BARO_BYTE               40 // kPa
 /* ----- Speeduino addresses end  ----- */
 
-#define SERIAL_UPDATE_MS  50
+#define SERIAL_UPDATE_MS  100
 
 //#define TEST // De-comment to enter test mode
 

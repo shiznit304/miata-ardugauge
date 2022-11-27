@@ -64,11 +64,11 @@ void loop()
     #define TEST_RPM 900
     buffer[SPEEDUINO_RPM_WORD] = TEST_RPM % 256;
     buffer[SPEEDUINO_RPM_WORD+1] = TEST_RPM / 256;
-    shiftLight = true;
+    //shiftLight = true;
     #define TEST_MAP 105
     buffer[SPEEDUINO_MAP_WORD] = TEST_MAP % 256;
     buffer[SPEEDUINO_MAP_WORD+1] = TEST_MAP / 256;
-    buffer[SPEEDUINO_VE_BYTE] = 155;
+    buffer[SPEEDUINO_CURRENTVE_BYTE] = 155;
     buffer[SPEEDUINO_BARO_BYTE] = 100;
     buffer[SPEEDUINO_CLT_BYTE] = 30;
     buffer[SPEEDUINO_IAT_BYTE] = 25;
@@ -77,9 +77,10 @@ void loop()
     buffer[SPEEDUINO_AFRTARGET_BYTE] = 145;
     buffer[SPEEDUINO_AFR_BYTE] = 147;
     buffer[SPEEDUINO_VOLTAGE_BYTE] = 120;
-    buffer[SPEEDUINO_EGOCORR_BYTE] = 102;
+    buffer[SPEEDUINO_EGOCORR_BYTE] = 100;
     buffer[SPEEDUINO_TPSDOT_BYTE] = 100;
     buffer[SPEEDUINO_TAECORR_BYTE] = 105;
+    buffer[SPEEDUINO_GAMMAE_BYTE] = 105;
   #endif
   
   // Check/update engine status
@@ -107,9 +108,9 @@ void loop()
 
     #ifndef TEST
       // Check if shift light must be lit
-      if(!shiftLight && getWord(SPEEDUINO_RPM_WORD) > SHIFTLIGHT_ON_RPM)
+      if(!shiftLight && (getBit(SPEEDUINO_SPARK_BITFIELD, SPEEDUINO_SPARK_SOFTLIMIT_BIT) || getBit(SPEEDUINO_SPARK_BITFIELD, SPEEDUINO_SPARK_HARDLIMIT_BIT) || getWord(SPEEDUINO_RPM_WORD) > SHIFTLIGHT_ON_RPM))
         shiftLight = true;
-      else if(shiftLight && getWord(SPEEDUINO_RPM_WORD) < SHIFTLIGHT_OFF_RPM)
+      else if(shiftLight && (!getBit(SPEEDUINO_SPARK_BITFIELD, SPEEDUINO_SPARK_SOFTLIMIT_BIT) && !getBit(SPEEDUINO_SPARK_BITFIELD, SPEEDUINO_SPARK_HARDLIMIT_BIT) && getWord(SPEEDUINO_RPM_WORD) < SHIFTLIGHT_OFF_RPM))
         shiftLight = false;
     #endif
   }
