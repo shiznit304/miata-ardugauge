@@ -1,6 +1,7 @@
 # miata-ardugauge
 
 An OLED gauge for the Speeduino ECU. Uses UART (secondary serial) for communication.
+
 _NOTE:_ The gauge shares the same Serial port for communcations with Speeduino ECU and USB connection for programming. Disconnect from the ECU if you wish to upload the Arduino sketch.
 
 **Most of the code (and basically 99% of the Comms code) is based on the original Ardugauge project by MielArrojado!**
