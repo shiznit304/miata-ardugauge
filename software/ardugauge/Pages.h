@@ -6,7 +6,7 @@
 #define TPSDOT_PERSISTENCE_MS 1000
 
 #define WARNING_OILTEMP 115
-#define WARNING_CLTTEMP 90
+#define WARNING_CLTTEMP 100
 
 #define SHIFTLIGHT_ON_RPM 6800                      // Activate shift light above this threshold
 #define SHIFTLIGHT_OFF_RPM SHIFTLIGHT_ON_RPM - 100  // Turn off shift light under this threshold

@@ -19,7 +19,7 @@ void initDisplay()
   #ifndef TEST
     OLED.drawBitmap(0, 15, logoMazdaOutline, 128, 21, 1);
     OLED.display();
-    delay(1000);
+    delay(5000);
   #endif
 }
 
@@ -42,50 +42,60 @@ void topRow_OIL_CLT_IAT(uint8_t oilT)
 {
   char valString[8];
 
-  // Print OIL
-  OLED.setCursor(9,1);
-  OLED.setTextSize(0);
-  OLED.print(F("OIL"));
-  OLED.setCursor(-1, 12);
-  OLED.setTextSize(2);
-  if(oilT == 0)
-    OLED.print(F(" *"));  // Oil is cold (< 25)
-  else if(oilT == 255)
-    OLED.print(F("N/D")); // No sensor
-  else
-  {
-    if(oilT < 100)
-      OLED.print(" ");
-    formatValue(valString, oilT, 0);
-    OLED.print(valString);
-  }
+  // Print OIL Temp
+  //OLED.setCursor(9,1);
+  //OLED.setTextSize(0);
+  //OLED.print(F("OIL T"));
+  //OLED.setCursor(-1, 12);
+  //OLED.setTextSize(2);
+  //if(oilT == 0)
+  //  OLED.print(F(" *"));  // Oil is cold (< 25)
+  //else if(oilT == 255)
+  //  OLED.print(F("N/D")); // No sensor
+  //else
+  //{
+  //  if(oilT < 100)
+  //    OLED.print(" ");
+  //  formatValue(valString, oilT, 0);
+  //  OLED.print(valString);
+  //}
   
+  // Print Oil Pressure
+  uint8_t oilP = getByte(SPEEDUINO_OILPRESSURE_BYTE);
+  OLED.setCursor(1,1);
+  OLED.setTextSize(0);
+  OLED.print(F("OIL P"));
+  OLED.setCursor(1, 12);
+  OLED.setTextSize(2);
+  formatValue(valString, oilP, 0);
+  OLED.print(valString);
+
   // Print CLT
   int16_t clt = (int16_t)getByte(SPEEDUINO_CLT_BYTE) + SPEEDUINO_TEMPERATURE_OFFSET;
-  OLED.setCursor(55,1);
+  OLED.setCursor(45,1);
   OLED.setTextSize(0);
   OLED.print(F("WATER"));
-  OLED.setCursor(46, 12);
+  OLED.setCursor(40, 12);
   OLED.setTextSize(2);
   if(abs(clt) < 10)
     OLED.print(" ");
   if(clt > 0)
     OLED.print(" ");
-  formatValue(valString, clt, 0);
+  formatValue(valString, clt * 1.8 + 32, 0);
   OLED.print(valString);
 
   // Print IAT
   int16_t iat = (int16_t)getByte(SPEEDUINO_IAT_BYTE) + SPEEDUINO_TEMPERATURE_OFFSET;
-  OLED.setCursor(108,1);
+  OLED.setCursor(95,1);
   OLED.setTextSize(0);
   OLED.print(F("AIR"));
-  OLED.setCursor(92,12);
+  OLED.setCursor(85,12);
   OLED.setTextSize(2);
   if(abs(iat) < 10)
     OLED.print(" ");
   if(iat > 0 && iat < 100)
     OLED.print(" ");
-  formatValue(valString, iat, 0);
+  formatValue(valString, iat * 1.8 + 32, 0);
   OLED.print(valString);
 }
 
@@ -96,15 +106,24 @@ void topRow_BAT_BARO_IAT()
   char valString[8];
 
   // Print Battery Voltage
-  uint8_t bat = getByte(SPEEDUINO_VOLTAGE_BYTE);
+  //uint8_t bat = getByte(SPEEDUINO_VOLTAGE_BYTE);
+  //OLED.setCursor(3,1);
+  //OLED.setTextSize(0);
+  //OLED.print(F("BATTERY"));
+  //OLED.setCursor(-1,12);
+  //OLED.setTextSize(2);
+  //if(bat < 100)
+  //  OLED.print(" ");
+  //formatValue(valString, bat, 1);
+  //OLED.print(valString);
+
+  uint8_t oilP = getByte(SPEEDUINO_OILPRESSURE_BYTE);
   OLED.setCursor(3,1);
   OLED.setTextSize(0);
-  OLED.print(F("BATTERY"));
-  OLED.setCursor(-1,12);
+  OLED.print(F("OIL P"));
+  OLED.setCursor(-1, 12);
   OLED.setTextSize(2);
-  if(bat < 100)
-    OLED.print(" ");
-  formatValue(valString, bat, 1);
+  formatValue(valString, oilP, 0);
   OLED.print(valString);
 
   // Print BARO
@@ -112,7 +131,7 @@ void topRow_BAT_BARO_IAT()
   OLED.setCursor(62,1);
   OLED.setTextSize(0);
   OLED.print(F("BARO"));
-  OLED.setCursor(50, 12);
+  OLED.setCursor(35, 12);
   OLED.setTextSize(2);
   if(baro < 100)
     OLED.print(" ");
@@ -124,13 +143,13 @@ void topRow_BAT_BARO_IAT()
   OLED.setCursor(108,1);
   OLED.setTextSize(0);
   OLED.print(F("AIR"));
-  OLED.setCursor(92,12);
+  OLED.setCursor(77,12);
   OLED.setTextSize(2);
   if(abs(iat) < 10)
     OLED.print(" ");
   if(iat > 0 && iat < 100)
     OLED.print(" ");
-  formatValue(valString, iat, 0);
+  formatValue(valString, iat * 1.8 + 32, 0);
   OLED.print(valString);
 }
 
@@ -139,36 +158,46 @@ void topRow_OIL_CLT_Target(uint8_t oilT)
 {
   char valString[8];
 
-  // Print OIL
-  OLED.setCursor(9,1);
-  OLED.setTextSize(0);
-  OLED.print(F("OIL"));
-  OLED.setCursor(-1, 12);
-  OLED.setTextSize(2);
-  if(oilT == 0)
-    OLED.print(F(" *"));  // Oil is cold (< 25)
-  else if(oilT == 255)
-    OLED.print(F("N/D")); // No sensor
-  else
-  {
-    if(oilT < 100)
-      OLED.print(" ");
-    formatValue(valString, oilT, 0);
-    OLED.print(valString);
-  }
+  //6// Print OIL
+  //6OLED.setCursor(9,1);
+  //6OLED.setTextSize(0);
+  //6OLED.print(F("OIL"));
+  //6OLED.setCursor(-1, 12);
+  //6OLED.setTextSize(2);
+  //6if(oilT == 0)
+  //6  OLED.print(F(" *"));  // Oil is cold (< 25)
+  //6else if(oilT == 255)
+  //6  OLED.print(F("N/D")); // No sensor
+  //6else
+  //6{
+  //6  if(oilT < 100)
+  //6    OLED.print(" ");
+  //6  formatValue(valString, oilT, 0);
+  //6  OLED.print(valString);
+  //6}
   
+  // Print Oil Pressure
+  uint8_t oilP = getByte(SPEEDUINO_OILPRESSURE_BYTE);
+  OLED.setCursor(1,1);
+  OLED.setTextSize(0);
+  OLED.print(F("OIL P"));
+  OLED.setCursor(1, 12);
+  OLED.setTextSize(2);
+  formatValue(valString, oilP, 0);
+  OLED.print(valString);
+
   // Print CLT
   int16_t clt = (int16_t)getByte(SPEEDUINO_CLT_BYTE) + SPEEDUINO_TEMPERATURE_OFFSET;
   OLED.setCursor(48,1);
   OLED.setTextSize(0);
   OLED.print(F("WATER"));
-  OLED.setCursor(40, 12);
+  OLED.setCursor(35, 12);
   OLED.setTextSize(2);
   if(abs(clt) < 10)
     OLED.print(" ");
   if(clt > 0)
     OLED.print(" ");
-  formatValue(valString, clt, 0);
+  formatValue(valString, clt * 1.8 + 32, 0);
   OLED.print(valString);
 
   // Print Target
@@ -196,36 +225,44 @@ void topRow_OIL_Target(uint8_t oilT)
     OLED.setCursor(3,1);
     OLED.setTextSize(0);
     OLED.print(F("WATER"));
-    OLED.setCursor(-1, 12);
+    OLED.setCursor(-6, 12);
     OLED.setTextSize(2);
     if(clt < 100)
     OLED.print(" ");
-    formatValue(valString, clt, 0);
+    formatValue(valString, clt * 1.8 + 32, 0);
     OLED.print(valString);
   }
   else
   {
     // Water temperature is ok, show Oil temperature
 
-    if(oilT < 255 && oilT > WARNING_OILTEMP) // Oil overheat!
-      OLED.fillRoundRect(0, 0, 36, 28, 2, INVERSE);
-    
+    //if(oilT < 255 && oilT > WARNING_OILTEMP) // Oil overheat!
+    //  OLED.fillRoundRect(0, 0, 36, 28, 2, INVERSE);
+    //
+    //OLED.setCursor(9,1);
+    //OLED.setTextSize(0);
+    //OLED.print(F("OIL"));
+    //OLED.setCursor(-1,12);
+    //OLED.setTextSize(2);
+    //if(oilT == 0)
+    //  OLED.print(F(" *"));  // Oil is cold (< 25)
+    //else if(oilT == 255)
+    //  OLED.print(F("N/D")); // No sensor
+    //else
+    //{
+    //  if(oilT < 100)
+    //    OLED.print(" ");
+    //  formatValue(valString, oilT, 0);
+    //  OLED.print(valString);
+    //}
+    uint8_t oilP = getByte(SPEEDUINO_OILPRESSURE_BYTE);
     OLED.setCursor(9,1);
     OLED.setTextSize(0);
-    OLED.print(F("OIL"));
-    OLED.setCursor(-1,12);
+    OLED.print(F("OIL P"));
+    OLED.setCursor(-1, 12);
     OLED.setTextSize(2);
-    if(oilT == 0)
-      OLED.print(F(" *"));  // Oil is cold (< 25)
-    else if(oilT == 255)
-      OLED.print(F("N/D")); // No sensor
-    else
-    {
-      if(oilT < 100)
-        OLED.print(" ");
-      formatValue(valString, oilT, 0);
-      OLED.print(valString);
-    }
+    formatValue(valString, oilP, 0);
+    OLED.print(valString);
   }
 
   // Display AFR Target

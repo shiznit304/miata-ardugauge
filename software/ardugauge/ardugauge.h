@@ -33,6 +33,7 @@
   #define SPEEDUINO_SPARK_SYNC_BIT        7
 #define SPEEDUINO_IDLELOAD_BYTE           37 // %
 #define SPEEDUINO_BARO_BYTE               40 // kPa
+#define SPEEDUINO_OILPRESSURE_BYTE        104 // kPa
 /* ----- Speeduino addresses end  ----- */
 
 #define SERIAL_UPDATE_MS  100
