@@ -38,7 +38,7 @@ void endPage()
 }
 
 // Display CLT, OIL and IAT on the top row
-void topRow_OIL_CLT_IAT(uint8_t oilT)
+void topRow_OFF(uint8_t oilT)
 {
   char valString[8];
 
@@ -51,7 +51,7 @@ void topRow_OIL_CLT_IAT(uint8_t oilT)
   if(oilT == 0)
     OLED.print(F(" *"));  // Oil is cold (< 25)
   else if(oilT == 255)
-    OLED.print(F("N/D")); // No sensor
+    OLED.print(F(" /")); // No sensor
   else
   {
     if(oilT < 100)
@@ -91,7 +91,7 @@ void topRow_OIL_CLT_IAT(uint8_t oilT)
 
 
 // Display IAT and BAT on the top row
-void topRow_BAT_BARO_IAT()
+void topRow_IDLE()
 {
   char valString[8];
 
@@ -135,7 +135,7 @@ void topRow_BAT_BARO_IAT()
 }
 
 // Display CLT, OIL and Target on the top row
-void topRow_OIL_CLT_Target(uint8_t oilT)
+void topRow_WARMUP(uint8_t oilT)
 {
   char valString[8];
 
@@ -148,7 +148,7 @@ void topRow_OIL_CLT_Target(uint8_t oilT)
   if(oilT == 0)
     OLED.print(F(" *"));  // Oil is cold (< 25)
   else if(oilT == 255)
-    OLED.print(F("N/D")); // No sensor
+    OLED.print(F(" /")); // No sensor
   else
   {
     if(oilT < 100)
@@ -171,18 +171,33 @@ void topRow_OIL_CLT_Target(uint8_t oilT)
   formatValue(valString, clt, 0);
   OLED.print(valString);
 
-  // Print Target
-  OLED.setCursor(92,1);
-  OLED.setTextSize(0);
-  OLED.print(F("TARGET"));
-  OLED.setCursor(80,12);
-  OLED.setTextSize(2);
-  formatValue(valString, getByte(SPEEDUINO_AFRTARGET_BYTE), 1);
-  OLED.print(valString);
+  uint8_t ase = getByte(SPEEDUINO_ASE_BYTE);
+  if(ase != 100)
+  {
+    // Print ASE
+    OLED.setCursor(102,1);
+    OLED.setTextSize(0);
+    OLED.print(F("ASE"));
+    OLED.setCursor(92,12);
+    OLED.setTextSize(2);
+    formatValue(valString, ase, 0);
+    OLED.print(valString);
+  }
+  else
+  {
+    // Print Target
+    OLED.setCursor(92,1);
+    OLED.setTextSize(0);
+    OLED.print(F("TARGET"));
+    OLED.setCursor(80,12);
+    OLED.setTextSize(2);
+    formatValue(valString, getByte(SPEEDUINO_AFRTARGET_BYTE), 1);
+    OLED.print(valString);
+  }
 }
 
 // Display OIL and Target AFR on the top row + Display warning if CLT or OIL are overheating
-void topRow_OIL_Target(uint8_t oilT)
+void topRow_DRIVE(uint8_t oilT)
 {
   char valString[8];
 
@@ -218,7 +233,7 @@ void topRow_OIL_Target(uint8_t oilT)
     if(oilT == 0)
       OLED.print(F(" *"));  // Oil is cold (< 25)
     else if(oilT == 255)
-      OLED.print(F("N/D")); // No sensor
+      OLED.print(F(" /")); // No sensor
     else
     {
       if(oilT < 100)
@@ -236,7 +251,7 @@ void topRow_OIL_Target(uint8_t oilT)
 }
 
 // Display BAT and BARO on the bottom row
-void bottomRow_BAT_BARO()
+void bottomRow_OFF()
 {
   char valString[8];
   
@@ -266,7 +281,7 @@ void bottomRow_BAT_BARO()
 }
 
 // Display AFR on the bottom row
-void bottomRow_AFR()
+void bottomRow_ON()
 {
   char valString[8];
   int8_t i;
@@ -291,27 +306,6 @@ void bottomRow_AFR()
     OLED.fillTriangle(20, 46, 24, 38, 28, 46, INVERSE);
   else if(getByte(SPEEDUINO_TAECORR_BYTE) < 100)
     OLED.fillTriangle(20, 50, 24, 58, 28, 50, INVERSE);
-}
-
-// Display Target and AFR on the bottom row
-void bottomRow_Target_AFR()
-{
-  char valString[8];
-
-  // Print Target
-  OLED.setCursor(7,37);
-  OLED.setTextSize(0);
-  OLED.print(F("TARGET"));
-  OLED.setCursor(1,48);
-  OLED.setTextSize(2);
-  formatValue(valString, getByte(SPEEDUINO_AFRTARGET_BYTE), 1);
-  OLED.print(valString);
-
-  // Print AFR
-  OLED.setCursor(56,41);
-  OLED.setTextSize(3);
-  formatValue(valString, getByte(SPEEDUINO_AFR_BYTE), 1);
-  OLED.print(valString);
 }
 
 // Display tuning values on 3 lines
@@ -372,6 +366,121 @@ void pageTuning()
   if(new_ve < 100)
     OLED.print(" ");
   formatValue(valString, new_ve, 0);
+  OLED.print(valString);
+}
+
+void pageAE()
+{
+  char valString[8];
+
+  static uint16_t maxTPSDOT = 0;
+  static uint8_t maxTAE = 100;
+  static uint32_t lastTPSDOT = millis();
+  static uint16_t taeRPM;
+  static uint8_t maxAFR = 100;
+  static uint8_t minAFR = 199;
+
+  //Print Labels
+  OLED.setTextSize(0);
+
+  OLED.setCursor(50,0);
+  OLED.print(F("RPM"));
+  OLED.setCursor(61,10);
+  OLED.print(F("%/S"));
+
+  OLED.setCursor(50,23);
+  OLED.print(F("AE%"));
+  OLED.setCursor(61,33);
+  OLED.print(F("TGT"));
+
+  OLED.setCursor(50,47);
+  OLED.print(F("MAX"));
+  OLED.setCursor(61,57);
+  OLED.print(F("MIN"));
+
+  OLED.setTextSize(2);
+  
+  uint16_t rpm = getWord(SPEEDUINO_RPM_WORD);
+  uint16_t tpsdot = getByte(SPEEDUINO_TPSDOT_BYTE) * 10;
+  uint8_t tae = getByte(SPEEDUINO_TAECORR_BYTE);
+  uint8_t afr = getByte(SPEEDUINO_AFR_BYTE);
+  uint8_t tgt = getByte(SPEEDUINO_AFRTARGET_BYTE);
+  
+  if(tpsdot > maxTPSDOT)
+  {
+	// AE event
+    maxTPSDOT = tpsdot;
+	  taeRPM = rpm;
+	  maxTAE = tae;
+	  if(afr > maxAFR)
+		  maxAFR = afr;
+    if(afr < minAFR)
+		  minAFR = afr;
+	
+    lastTPSDOT = millis();
+
+    // Draw AE indicator
+    OLED.fillTriangle(0, 27, 5, 32, 0, 37, INVERSE);
+  }
+  else if(millis() > lastTPSDOT + AE_MONITOR_MS)
+  {
+    // AE Monitoring ended
+	  maxTPSDOT = 0;
+	  maxAFR = 100;
+    minAFR = 199;
+	
+    lastTPSDOT = millis();
+  }
+  else if(maxTPSDOT > 0)
+  {
+    // AE occurred, and we are monitoring AFR and TAE
+    if(afr > maxAFR)
+      maxAFR = afr;
+    if(afr < minAFR)
+		  minAFR = afr;
+    if(tae > maxTAE)
+      maxTAE = tae;
+
+    // Display the values that we saved then we had the tpsDOT event, instead of "live" values
+    rpm = taeRPM;
+    tae = maxTAE;
+      
+    // Draw AE indicator
+    OLED.fillTriangle(0, 27, 5, 32, 0, 37, INVERSE);
+  }
+
+  // Print RPM
+  OLED.setCursor(0,1);
+  if(rpm < 1000)
+    OLED.print(" ");
+  formatValue(valString, rpm, 0);
+  OLED.print(valString);
+
+  // Print TPSdot
+  OLED.setCursor(80,1);
+  if(tpsdot < 1000)
+    OLED.print(" ");
+  formatValue(valString, tpsdot, 0);
+  OLED.print(valString);
+
+  // Print AE%
+  OLED.setCursor(12,25);
+  formatValue(valString, tae, 0);
+  OLED.print(valString);
+
+  // Print Target
+  OLED.setCursor(80,25);
+  formatValue(valString, tgt, 1);
+  OLED.print(valString);
+
+  // Print Max AFR
+  OLED.setCursor(0,49);
+  formatValue(valString, maxAFR, 1);
+  OLED.print(valString);
+
+  // Print Min AFR
+  OLED.setCursor(80,49);
+  formatValue(valString, minAFR, 1);
   OLED.print(valString);
 }
 

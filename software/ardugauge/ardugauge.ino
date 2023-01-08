@@ -58,14 +58,14 @@ void loop()
   // TEST //
   #ifdef TEST
     ecuConnected = true;
-    //pageNum = PAGE_RPM_MAP;
+    pageNum = PAGE_AUTO;
     bitSet(buffer[SPEEDUINO_ENGINE_BITFIELD], SPEEDUINO_ENGINE_RUNNING_BIT);
-    //bitSet(buffer[SPEEDUINO_ENGINE_BITFIELD], SPEEDUINO_ENGINE_WARMUP_BIT);
-    #define TEST_RPM 900
+    bitSet(buffer[SPEEDUINO_ENGINE_BITFIELD], SPEEDUINO_ENGINE_WARMUP_BIT);
+    #define TEST_RPM 1200
     buffer[SPEEDUINO_RPM_WORD] = TEST_RPM % 256;
     buffer[SPEEDUINO_RPM_WORD+1] = TEST_RPM / 256;
     //shiftLight = true;
-    #define TEST_MAP 105
+    #define TEST_MAP 50
     buffer[SPEEDUINO_MAP_WORD] = TEST_MAP % 256;
     buffer[SPEEDUINO_MAP_WORD+1] = TEST_MAP / 256;
     buffer[SPEEDUINO_CURRENTVE_BYTE] = 155;
@@ -78,9 +78,10 @@ void loop()
     buffer[SPEEDUINO_AFR_BYTE] = 147;
     buffer[SPEEDUINO_VOLTAGE_BYTE] = 120;
     buffer[SPEEDUINO_EGOCORR_BYTE] = 100;
-    buffer[SPEEDUINO_TPSDOT_BYTE] = 100;
-    buffer[SPEEDUINO_TAECORR_BYTE] = 105;
-    buffer[SPEEDUINO_GAMMAE_BYTE] = 105;
+    buffer[SPEEDUINO_TPSDOT_BYTE] = 0;
+    buffer[SPEEDUINO_TAECORR_BYTE] = 100;
+    buffer[SPEEDUINO_GAMMAE_BYTE] = 100;
+    buffer[SPEEDUINO_ASE_BYTE] = 105;
   #endif
   
   // Check/update engine status
@@ -132,20 +133,20 @@ void loop()
         switch(engineStatus)
         {
           case ENGINE_OFF:
-            topRow_OIL_CLT_IAT(oilTemp);
-            bottomRow_BAT_BARO();
+            topRow_OFF(oilTemp);
+            bottomRow_OFF();
             break;
           case ENGINE_WARMUP:
-            topRow_OIL_CLT_Target(oilTemp);
-            bottomRow_AFR();
+            topRow_WARMUP(oilTemp);
+            bottomRow_ON();
             break;
           case ENGINE_RUN:
             if(engineIdling && ((millis() - engineIdling) > IDLE_DELAY_MS))
-              topRow_BAT_BARO_IAT();
+              topRow_IDLE();
             else
-              topRow_OIL_Target(oilTemp);
+              topRow_DRIVE(oilTemp);
             
-            bottomRow_AFR();
+            bottomRow_ON();
             break;
           default:
             break;
@@ -153,6 +154,9 @@ void loop()
         break;
       case PAGE_RPM_MAP:
         pageTuning();
+        break;
+      case PAGE_AE:
+        pageAE();
         break;
       case PAGE_AFRGRAPH:
         pageAFRGraph();

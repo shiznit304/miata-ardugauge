@@ -33,11 +33,12 @@
   #define SPEEDUINO_SPARK_SYNC_BIT        7
 #define SPEEDUINO_IDLELOAD_BYTE           37 // %
 #define SPEEDUINO_BARO_BYTE               40 // kPa
+#define SPEEDUINO_ASE_BYTE                99 // %
 /* ----- Speeduino addresses end  ----- */
 
 #define SERIAL_UPDATE_MS  100
 
-//#define TEST // De-comment to enter test mode
+#define TEST // De-comment to enter test mode
 
 /* ----- Engine status ----- */
 #define ENGINE_OFF		0 
@@ -52,5 +53,6 @@
 /* ----- OLED display pages ----- */
 #define PAGE_AUTO       0 // Must be the first page
 #define PAGE_RPM_MAP    1
-#define PAGE_AFRGRAPH   2 // Must be the last page
+#define PAGE_AE         2
+#define PAGE_AFRGRAPH   3 // Must be the last page
 /* ----- OLED pages end     ----- */
