@@ -30,7 +30,7 @@
 #define SPEEDUINO_EGOCORR_BYTE            11  // EGO Correction (%)
 #define SPEEDUINO_IATCORR_BYTE            12  // Air Temperature Correction (%)
 #define SPEEDUINO_WUECORR_BYTE            13  // Warmup Enrichment Correction (%)
-#define SPEEDUINO_RPM_WORD				        14  // RPM (2 bytes)
+#define SPEEDUINO_RPM_WORD                14  // RPM (2 bytes)
 #define SPEEDUINO_AECORR_BYTE             16  // Acceleration Enrichment Correction (%)
 #define SPEEDUINO_GAMMAE_BYTE             17  // Gamma Correction (%)
 #define SPEEDUINO_CURRENTVE_BYTE          18  // Current VE
