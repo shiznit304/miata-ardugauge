@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "speeduino_data.h"
 #include "Pages.h"
 #include "Comms.h"
 #include "ardugauge.h"
@@ -79,9 +80,9 @@ void loop()
     buffer[SPEEDUINO_VOLTAGE_BYTE] = 120;
     buffer[SPEEDUINO_EGOCORR_BYTE] = 100;
     buffer[SPEEDUINO_TPSDOT_BYTE] = 0;
-    buffer[SPEEDUINO_TAECORR_BYTE] = 100;
+    buffer[SPEEDUINO_AECORR_BYTE] = 100;
     buffer[SPEEDUINO_GAMMAE_BYTE] = 100;
-    buffer[SPEEDUINO_ASE_BYTE] = 105;
+    buffer[SPEEDUINO_ASECORR_BYTE] = 105;
   #endif
   
   // Check/update engine status

@@ -2,9 +2,8 @@
 #define COMMS_H
 
 #include "Arduino.h"
-#define DATA_LEN 119
 
-static uint8_t buffer[DATA_LEN];
+static uint8_t buffer[SPEEDUINO_DATA_LEN];
 bool requestData(uint16_t timeout = 20);
 
 bool getBit(uint16_t address, uint8_t bit);

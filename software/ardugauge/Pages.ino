@@ -171,7 +171,7 @@ void topRow_WARMUP(uint8_t oilT)
   formatValue(valString, clt, 0);
   OLED.print(valString);
 
-  uint8_t ase = getByte(SPEEDUINO_ASE_BYTE);
+  uint8_t ase = getByte(SPEEDUINO_ASECORR_BYTE);
   if(ase != 100)
   {
     // Print ASE
@@ -301,10 +301,10 @@ void bottomRow_ON()
   i = (getByte(SPEEDUINO_EGOCORR_BYTE) - 100) * EGO_TICK_PIXELS;
   OLED.fillTriangle(8, 48 - i, 12, 44 - i, 12, 52 - i, INVERSE);
 
-  // TPS AE/DE indicator
-  if(getByte(SPEEDUINO_TAECORR_BYTE) > 100)
+  // AE/DE indicator
+  if(getBit(SPEEDUINO_ENGINE_BITFIELD, SPEEDUINO_ENGINE_TPSAE_BIT) || getBit(SPEEDUINO_ENGINE_BITFIELD, SPEEDUINO_ENGINE_MAPAE_BIT))
     OLED.fillTriangle(20, 46, 24, 38, 28, 46, INVERSE);
-  else if(getByte(SPEEDUINO_TAECORR_BYTE) < 100)
+  if(getBit(SPEEDUINO_ENGINE_BITFIELD, SPEEDUINO_ENGINE_TPSDE_BIT) || getBit(SPEEDUINO_ENGINE_BITFIELD, SPEEDUINO_ENGINE_MAPDE_BIT))
     OLED.fillTriangle(20, 50, 24, 58, 28, 50, INVERSE);
 }
 
@@ -402,7 +402,7 @@ void pageAE()
   
   uint16_t rpm = getWord(SPEEDUINO_RPM_WORD);
   uint16_t tpsdot = getByte(SPEEDUINO_TPSDOT_BYTE) * 10;
-  uint8_t tae = getByte(SPEEDUINO_TAECORR_BYTE);
+  uint8_t tae = getByte(SPEEDUINO_AECORR_BYTE);
   uint8_t afr = getByte(SPEEDUINO_AFR_BYTE);
   uint8_t tgt = getByte(SPEEDUINO_AFRTARGET_BYTE);
   
@@ -510,9 +510,9 @@ void pageAFRGraph()
   }
 
   // Update max TAE value
-  if(getByte(SPEEDUINO_TAECORR_BYTE) >= maxTAE)
+  if(getByte(SPEEDUINO_AECORR_BYTE) >= maxTAE)
   {
-    maxTAE = getByte(SPEEDUINO_TAECORR_BYTE);
+    maxTAE = getByte(SPEEDUINO_AECORR_BYTE);
     lastTAE = millis();
   }
   else if(millis() > lastTAE + TPSDOT_PERSISTENCE_MS)
