@@ -99,7 +99,7 @@
 #define SPEEDUINO_FUELLOAD_WORD           84  // Fuel Table load (kPa or TPS%, 2 bytes)
 #define SPEEDUINO_IGNLOAD_WORD            86  // Spark Table load (kPa or TPS%, 2 bytes)
 #define SPEEDUINO_INJANGLE_WORD           88  // Injection angle (2 bytes)
-//#define SPEEDUINO_IDLELOAD_WORD         90  // DUPLICATE OF ADDRESS 37 ?
+#define SPEEDUINO_IDLELOAD_BYTE           90  // DUPLICATE OF ADDRESS 37 - HOPEFULLY WILL BE FIXED IN THE SPEEDUINO FIRMWARE
 #define SPEEDUINO_CLIDLETARGET_BYTE       91  // Closed-Loop Idle Target RPM (multiply by 10)
 #define SPEEDUINO_MAPDOT_BYTE             92  // MAPdot (kPa/s, multiply by 10)
 #define SPEEDUINO_VVT1ANGLE_BYTE          93  // VVT1 Angle (Degrees, SIGNED)
